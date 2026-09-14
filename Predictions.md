@@ -14,4 +14,13 @@
 | P1 | 1 ligne RECOMP                        | Aucun écart                                                                                                                                                                                                                                                                                                                      | |
 | P2 | 0 nouvelle ligne RECOMP après 3 clics | Au clic, Compose ne recompose que la portée interne et pas la fonction `ProduitCard` donc le log ne se redéclenche jamais.| |
 
-**Question de contrôle :** sans `remember`, `mutableStateOf(0)` serait ré-exécuté à chaque recomposition, recréant un état neuf initialisé à 0 — l'incrément serait donc immédiatement perdu et le compteur resterait bloqué à 0 malgré les clics.
+**Question de contrôle :** sans `remember`, `mutableStateOf(0)` serait ré-exécuté à chaque recomposition, le compteur resterait bloqué à 0 malgré les clics.
+
+## Observation bonus — rotation
+
+Avant rotation : `quantite` = 2 kg (après 2 clics), carte potentiellement sélectionnée.
+Après rotation : `quantite` = 0 kg (remis à zéro), `selectionnee` reviendrait à `false` — une seule nouvelle ligne RECOMP apparaît (nouvelle composition initiale).
+
+**Explication :** la rotation détruit et recrée l'Activity. La nouvelle instance repart de `mutableStateOf(...)` avec ses valeurs initiales.
+
+**Séance qui l'avait annoncé :** la Séance 3

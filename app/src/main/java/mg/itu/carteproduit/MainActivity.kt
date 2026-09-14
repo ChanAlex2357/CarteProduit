@@ -6,7 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 // Imports déjà prêts pour les TODO A et B — ne pas les supprimer :
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -46,45 +49,48 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun ProduitCard(produit: Produit) {
-    // Ce log trace chaque (re)composition de la carte — NE PAS le déplacer.
     Log.i("RECOMP", "ProduitCard se (re)compose")
-    var selectionnee by remember { mutableStateOf(false)  }
-
+    var selectionnee by remember { mutableStateOf(false) }
     var quantite by remember { mutableStateOf(0) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clickable{ selectionnee = !selectionnee },
+            .clickable { selectionnee = !selectionnee },
         colors = CardDefaults.cardColors(
             containerColor = if (selectionnee)
                 MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surfaceVariant
+            else MaterialTheme.colorScheme.surfaceVariant
         ),
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(produit.nom, style = MaterialTheme.typography.titleLarge)
-            Text(
-                "Origine : ${produit.origine}",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                produit.prixKg?.let { "${formatAriary(it)} / kg" } ?: "prix non fixé",
-                style = MaterialTheme.typography.bodyLarge,
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text("Quantité : $quantite kg")
-            Button(onClick = { quantite++ }) { Text("Ajouter 1 kg") }
+        Row (
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(produit.nom, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    "Origine : ${produit.origine}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    produit.prixKg?.let { "${formatAriary(it)} / kg" } ?: "prix non fixé",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Quantité : $quantite kg")
+                Button(onClick = { quantite++ }) { Text("Ajouter 1 kg") }
+            }
         }
     }
 }
-
-/** Formate un montant en ariary : 1250000.0 -> "1 250 000 Ar" (repris du mini-TP 1). */
 fun formatAriary(montant: Double): String {
     val entier = montant.toLong().toString()
     val groupes = entier.reversed().chunked(3).joinToString(" ").reversed()
